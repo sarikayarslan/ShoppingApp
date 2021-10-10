@@ -26,12 +26,21 @@ class ProductDetailScreen extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: 10,),
-            Text('${loadedProduct.price} TL', style:TextStyle(color:Colors.grey,fontSize: 20)),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
+            Text('${loadedProduct.price} TL',
+                style: TextStyle(color: Colors.grey, fontSize: 20)),
+            SizedBox(
+              height: 10,
+            ),
             Container(
                 padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Text(loadedProduct.description, textAlign: TextAlign.center, softWrap: true,)),
+                child: Text(
+                  loadedProduct.description,
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                )),
           ],
         ),
       ),
