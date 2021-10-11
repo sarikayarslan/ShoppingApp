@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '../providers/product.dart';
 import '../providers/products.dart';
@@ -16,7 +17,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
   var _editedProduct =
-      Product(id: '', title: '', price: 0, description: '', imageUrl: '');
+  Product(id: '', title: '', price: 0, description: '', imageUrl: '');
   var _initValues = {
     'title': '',
     'description': '',
@@ -30,9 +31,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.initState();
   }
 
+  @override
   void didChangeDependencies() {
     if (_isInit) {
-      final productId = ModalRoute.of(context)!.settings.arguments as String;
+      //burada hata var
+      final  productId;
+      if(ModalRoute.of(context)!.settings.arguments == null){
+        productId = '';
+      }
+      else{
+         productId = ModalRoute.of(context)!.settings.arguments as String;
+      }
+
       if (productId != '') {
         _editedProduct =
             Provider.of<Products>(context, listen: false).findById(productId);
@@ -84,6 +94,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
     } else {
+
       Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
     }
 
@@ -94,10 +105,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: const Text('Edit Product'),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _saveForm,
           )
         ],
@@ -110,7 +121,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             children: [
               TextFormField(
                 initialValue: _initValues['title'],
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Title',
                 ),
                 textInputAction: TextInputAction.next,
@@ -121,7 +132,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   if (value.toString().isEmpty) {
                     return 'Please provide a value';
                   }
-                  return null;
+                  return '';
                 },
                 onSaved: (value) {
                   _editedProduct = Product(
@@ -135,7 +146,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               TextFormField(
                 initialValue: _initValues['price'],
-                decoration: InputDecoration(labelText: 'Price'),
+                decoration: const InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
                 focusNode: _priceFocusNode,
@@ -143,10 +154,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   if (value!.isEmpty) {
                     return 'Please enter a price.';
                   }
-                  if (double.tryParse(value) == null) {
-                    return ' Please enter a valid number';
-                  }
-                  if (double.parse(value) <= 0) {
+                  // if (double.tryParse(value) == null) {
+                  //   return ' Please enter a valid number';
+                  // }
+                  else if (double.parse(value) <= 0) {
                     return 'Please enter a number greater than zero';
                   }
                 },
@@ -165,7 +176,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
               ),
               TextFormField(
                 initialValue: _initValues['description'],
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 focusNode: _descriptionFocusNode,
@@ -176,7 +187,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   if (value.length < 10) {
                     return 'Should be at least 10 character long.';
                   }
-                  return null;
+                  return '';
                 },
                 onSaved: (value) {
                   _editedProduct = Product(
@@ -194,22 +205,22 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Container(
                     width: 100,
                     height: 100,
-                    margin: EdgeInsets.only(
+                    margin: const EdgeInsets.only(
                       top: 8,
                       right: 10,
                     ),
                     decoration: BoxDecoration(
                         border: Border.all(width: 1, color: Colors.grey)),
                     child: _imageUrlController.text.isEmpty
-                        ? Text('Enter a URL')
+                        ? const Text('Enter a URL')
                         : FittedBox(
-                            child: Image.network(_imageUrlController.text),
-                            fit: BoxFit.fill,
-                          ),
+                      child: Image.network(_imageUrlController.text),
+                      fit: BoxFit.fill,
+                    ),
                   ),
                   Expanded(
                     child: TextFormField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Image URL',
                       ),
                       keyboardType: TextInputType.url,
@@ -229,7 +240,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             !value.endsWith('.jpeg')) {
                           return 'Please enter a valid image URL';
                         }
-                        return null;
+                        return '';
                       },
                       onFieldSubmitted: (_) {
                         _saveForm();

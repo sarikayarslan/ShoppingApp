@@ -9,8 +9,13 @@ import './providers/orders.dart';
 import './screens/orders_screen.dart';
 import './screens/user_products_screen.dart';
 import './screens/edit_product_screen.dart';
-void main() => runApp(MyApp());
-
+void main(){
+  runApp(
+    new MaterialApp(
+      home: MyApp(),
+    )
+  );
+}
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
