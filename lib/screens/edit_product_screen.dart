@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../providers/product.dart';
 import '../providers/products.dart';
@@ -17,7 +16,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlFocusNode = FocusNode();
   final _form = GlobalKey<FormState>();
   var _editedProduct =
-  Product(id: '', title: '', price: 0, description: '', imageUrl: '');
+      Product(id: '', title: '', price: 0, description: '', imageUrl: '');
   var _initValues = {
     'title': '',
     'description': '',
@@ -25,6 +24,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'imageUrl': '',
   };
   var _isInit = true;
+  var _isLoading = false;
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
@@ -35,12 +35,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void didChangeDependencies() {
     if (_isInit) {
       //burada hata var
-      final  productId;
-      if(ModalRoute.of(context)!.settings.arguments == null){
+      final productId;
+      if (ModalRoute.of(context)!.settings.arguments == null) {
         productId = '';
-      }
-      else{
-         productId = ModalRoute.of(context)!.settings.arguments as String;
+      } else {
+        productId = ModalRoute.of(context)!.settings.arguments as String;
       }
 
       if (productId != '') {
@@ -84,21 +83,53 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
-    final isValid = _form.currentState!.validate();
-    if (!isValid) {
+  Future<void> _saveForm() async {
+    final isValid = _form.currentState?.validate();
+    if (isValid == null || isValid == true) {
+      print('giriş başarısız');
       return;
     }
     _form.currentState!.save();
+    setState(() {
+      _isLoading = true;
+    });
+
     if (_editedProduct.id != '') {
       Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
     } else {
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('An error occurred!'),
+            content: Text('Something went wrong.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Okay'),
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+              )
+            ],
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.of(context).pop();
+      }
 
-      Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
     }
-
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
   }
 
   @override
@@ -113,7 +144,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: _isLoading ? Center(child:CircularProgressIndicator() ,):Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _form,
@@ -214,9 +245,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     child: _imageUrlController.text.isEmpty
                         ? const Text('Enter a URL')
                         : FittedBox(
-                      child: Image.network(_imageUrlController.text),
-                      fit: BoxFit.fill,
-                    ),
+                            child: Image.network(_imageUrlController.text),
+                            fit: BoxFit.fill,
+                          ),
                   ),
                   Expanded(
                     child: TextFormField(

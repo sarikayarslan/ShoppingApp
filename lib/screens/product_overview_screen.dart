@@ -5,6 +5,7 @@ import '../widgets/products_grid.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart';
 import 'cart_screen.dart';
+import '../providers/products.dart';
 
 enum FilterOptions {
   Favorites,
@@ -18,6 +19,26 @@ class ProductOverviewScreen extends StatefulWidget {
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var _showOnlyFavorite = false;
+  var _isInit = true;
+
+  @override
+  void initState() {
+//    Provider.of<Products>(context).fetchAndSetProducts();
+//
+//     Future.delayed(Duration.zero).then((_) {
+//       Provider.of<Products>(context).fetchAndSetProducts();
+//     });
+    super.initState();
+  }
+@override
+  void didChangeDependencies() {
+   if(_isInit){
+     Provider.of<Products>(context).fetchAndSetProducts();
+   }
+   _isInit = false;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,14 +62,14 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
                 value: FilterOptions.Favorites,
               ),
               PopupMenuItem(
-                child:  Text('Show All'),
+                child: Text('Show All'),
                 value: FilterOptions.All,
               ),
             ],
           ),
           Consumer<Cart>(
-            builder: (_, cart,ch) => Badge(
-              child:ch as Widget,
+            builder: (_, cart, ch) => Badge(
+              child: ch as Widget,
               value: cart.itemCount.toString(),
             ),
             child: IconButton(
